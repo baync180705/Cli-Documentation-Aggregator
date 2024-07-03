@@ -1,0 +1,1 @@
+This file has been created to prevent empty directory from not being pushed to git. When work begins in the directory, make sure to delete this file.
