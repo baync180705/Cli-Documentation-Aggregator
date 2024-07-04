@@ -20,7 +20,7 @@ model = GPT2LMHeadModel.from_pretrained(model_name)
 tokenizer = GPT2Tokenizer.from_pretrained(model_name)
 
 index = 1
-keyword = 'components'
+keyword = 'usestate'
 
 def reactDocsHomePageFetcher():
     data = requests.get(FETCH_REACT_DOC, proxies=PROXY)
@@ -44,7 +44,7 @@ def fetchUrlFromKeyword(keyword):
     relevantUrls = []
     for anchor in anchors:
         hrefPath = anchor.get('href')
-        if(keyword in hrefPath):
+        if(keyword in hrefPath.lower()):
             if(hrefPath in relevantUrls):
                 continue
             else:
@@ -57,7 +57,7 @@ def fetchUrlFromKeyword(keyword):
         return relevantUrls
 
 
-fetchedUrls = fetchUrlFromKeyword(keyword)
+fetchedUrls = fetchUrlFromKeyword(keyword.lower())
 
  
 print(fetchedUrls)
@@ -119,7 +119,7 @@ def generate_article(sentences):
     article = tokenizer.decode(outputs[0], skip_special_tokens=True)
     return article
 
-article = generate_article(paragraphs).replace('.','.\n').replace('<','\n<').replace('>','>\n')
+article = generate_article(paragraphs).replace('. ','.\n').replace('<','\n<').replace('>','>\n')
 
 
 with open(os.path.join(os.path.dirname(__file__),f'data/{keyword}.txt'),'w') as f:
