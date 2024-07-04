@@ -32,7 +32,7 @@ for parent in soup.find("h3").parents:
 
 #scrapping api url using h2 and h3 tags
 if "api" in url:
-    file_to_scrap = requests.get(url)
+    file_to_scrap = requests.get(url,proxies=PROXY)
     soup = BeautifulSoup(file_to_scrap.text,'html.parser')
   
     h2_list = soup.select("h2")
@@ -87,7 +87,7 @@ if "api" in url:
             print()
 #scrapping guide url using h2 and h3 tags
 else:
-    file_to_scrap = requests.get(url)
+    file_to_scrap = requests.get(url,proxies=PROXY)
     soup = BeautifulSoup(file_to_scrap.text,'html.parser')
     title = ""
     for h in soup.find("h1"):
