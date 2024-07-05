@@ -1,6 +1,5 @@
 import requests 
 from bs4 import BeautifulSoup 
-
 import proxy_ip
 from dotenv import load_dotenv
 
