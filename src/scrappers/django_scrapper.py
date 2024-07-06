@@ -32,19 +32,26 @@ def fetchRelevantUrl():
         django_doc = f.read()
 
     soupe = BeautifulSoup(django_doc,'html.parser')
-    a_tag = soupe.find('h2',class_ = 'result-title').children
+
+    if(soupe.find('h2',class_ = 'result-title') != None):
+        a_tag = soupe.find('h2',class_ = 'result-title').children
+        for anchor in a_tag:
+            if(hasattr(anchor,'get')):
+                href = anchor.get('href')
+                return(href)
+    else:
+        return 'ERROR'
     
-    for anchor in a_tag:
-        if(hasattr(anchor,'get')):
-            href = anchor.get('href')
-            return(href)
-        
+
 def fetchRelevantPage():
     url = fetchRelevantUrl()
-    data = requests.get(url, proxies= PROXY )
 
-    with open(FILE_PATH,'w') as f:
-        f.write(data.text)
+    if(url != 'ERROR'):
+        data = requests.get(url, proxies= PROXY )
+        with open(FILE_PATH,'w') as f:
+            f.write(data.text)
+    else:
+        print(f'ERROR: Keyword {keyword} not found')
 
 fetchRelevantPage()
 
@@ -68,7 +75,6 @@ def createParagraphsList():
         
     return paragraphs
 
-paragraphs = createParagraphsList()
 
 def generate_article(sentences):
     prompt = "\n".join(sentences)[:1024]
@@ -81,8 +87,10 @@ def generate_article(sentences):
     article = tokenizer.decode(outputs[0], skip_special_tokens=True)
     return article
 
-article = generate_article(paragraphs).replace('. ','.\n').replace('<','\n<').replace(': ',':\n')
 
+if(os.path.exists(FILE_PATH)):
+    paragraphs = createParagraphsList()
+    article = generate_article(paragraphs).replace('. ','.\n').replace('<','\n<').replace(': ',':\n')
 
-with open(os.path.join(os.path.dirname(__file__),f'data/{keyword.lower()}.txt'),'w') as f:
-    f.write(article)
+    with open(os.path.join(os.path.dirname(__file__),f'data/{keyword.lower()}.txt'),'w') as f:
+        f.write(article)
