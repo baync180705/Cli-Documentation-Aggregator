@@ -9,7 +9,7 @@ from selenium import webdriver
 
 load_dotenv()
 
-keyword = 'listview'
+keyword = 'sgvusb'
 
 FETCH_FLUTTER_SEARCH = os.getenv('FETCH_FLUTTER_SEARCH')
 FLUTTER_HOME_URL = os.getenv('FLUTTER_HOME_URL')
@@ -50,17 +50,24 @@ def fetchRelevantUrl():
     with open(HOME_PATH) as f:
         flutter_doc = f.read()
 
+
     soupe = BeautifulSoup(flutter_doc,'html.parser')
-    path = soupe.find('p').next_sibling.get('data-href')
-    return (FLUTTER_HOME_URL+path)
+    if (soupe.find('p') != None):
+        path = soupe.find('p').next_sibling.get('data-href')
+        return (FLUTTER_HOME_URL+path)
+    else:
+        return ("ERROR")
 
     
 def fetchRelevantPage():
     url = fetchRelevantUrl()
-    data = requests.get(url, proxies= PROXY )
+    if(url != 'ERROR'):
+        data = requests.get(url, proxies= PROXY )
 
-    with open(FILE_PATH,'w') as f:
-        f.write(data.text)
+        with open(FILE_PATH,'w') as f:
+            f.write(data.text)
+    else:
+        print('ERROR: Keyword not found')
 
 fetchRelevantPage()
 
@@ -83,7 +90,6 @@ def createParagraphsList():
         
     return paragraphs
 
-paragraphs = createParagraphsList()
 
 def generate_article(sentences):
     prompt = "\n".join(sentences)[:1024]
@@ -96,11 +102,13 @@ def generate_article(sentences):
     article = tokenizer.decode(outputs[0], skip_special_tokens=True)
     return article
 
-article = generate_article(paragraphs).replace('. ','.\n').replace('<','\n<').replace('>','>\n').replace(': ',':\n')
+if(os.path.exists(FILE_PATH)):
+    paragraphs = createParagraphsList()
+    article = generate_article(paragraphs).replace('. ','.\n').replace('<','\n<').replace('>','>\n').replace(': ',':\n')
+    with open(os.path.join(os.path.dirname(__file__),f'data/{keyword.lower()}.txt'),'w') as f:
+        f.write(article)
 
 
-with open(os.path.join(os.path.dirname(__file__),f'data/{keyword.lower()}.txt'),'w') as f:
-    f.write(article)
 
 
 
