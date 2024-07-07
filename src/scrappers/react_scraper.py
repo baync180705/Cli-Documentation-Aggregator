@@ -20,7 +20,7 @@ model = GPT2LMHeadModel.from_pretrained(model_name)
 tokenizer = GPT2Tokenizer.from_pretrained(model_name)
 
 index = 1
-keyword = 'usestate'
+keyword = 'hooks'
 
 def reactDocsHomePageFetcher():
     data = requests.get(FETCH_REACT_DOC, proxies=PROXY)
@@ -52,15 +52,13 @@ def fetchUrlFromKeyword(keyword):
 
     
     if(len(relevantUrls) ==0):
-        print(f'ERROR: keyword: {keyword} not found. Please try with a different keyword.')
+        return('ERROR')
     else:
         return relevantUrls
-
 
 fetchedUrls = fetchUrlFromKeyword(keyword.lower())
 
  
-print(fetchedUrls)
 paragraphs = []
 
 def inPageRouteScrapper(url):
@@ -96,18 +94,6 @@ def externalRouteScrapper(url, index, keyword):
             paragraphs.append(cleaned_text)
 
 
-
-
-for url in fetchedUrls:
-    if(url[0] == '#'):
-        inPageRouteScrapper(url)
-
-    if(url[0]=='/'):
-        externalRouteScrapper(FETCH_REACT_HOME+url,index, keyword)
-        index += 1
-
-
-
 def generate_article(sentences):
     prompt = "\n".join(sentences)[:1024]
 
@@ -119,8 +105,19 @@ def generate_article(sentences):
     article = tokenizer.decode(outputs[0], skip_special_tokens=True)
     return article
 
-article = generate_article(paragraphs).replace('. ','.\n').replace('<','\n<').replace('>','>\n')
 
 
-with open(os.path.join(os.path.dirname(__file__),f'data/{keyword}.txt'),'w') as f:
-    f.write(article)
+if(fetchedUrls != 'ERROR'):
+    for url in fetchedUrls:
+        if(url[0] == '#'):
+            inPageRouteScrapper(url)
+
+        if(url[0]=='/'):
+            externalRouteScrapper(FETCH_REACT_HOME+url,index, keyword)
+            index += 1
+    article = generate_article(paragraphs).replace('. ','.\n').replace('<','\n<').replace('>','>\n')
+
+    with open(os.path.join(os.path.dirname(__file__),f'data/{keyword}.txt'),'w') as f:
+        f.write(article)
+else:
+    print(f'ERROR: keyword: {keyword} not found. Please try with a different keyword.')

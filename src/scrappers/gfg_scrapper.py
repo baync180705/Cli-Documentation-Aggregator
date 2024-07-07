@@ -1,8 +1,16 @@
 import requests 
 from bs4 import BeautifulSoup 
+import proxy_ip
+from dotenv import load_dotenv
 
+load_dotenv()
+PROXY = {
+    'http': f'{proxy_ip.randomProxyPicker()}'
+}
+
+#taking user input 
 user_input = input("Enter something to search: ")
-google_search = requests.get("https://www.google.com/search?q="+user_input+" geekforgeeks")
+google_search = requests.get("https://www.google.com/search?q="+user_input+" geekforgeeks",proxies=PROXY)
  
 
 #creating b.soup object of google-search
@@ -22,7 +30,7 @@ for parent in soup.find("h3").parents:
 
 print(url)
 #fetching webpage and scrapping it
-gfg_req = requests.get(url)
+gfg_req = requests.get(url,proxies=PROXY)
 gfg = BeautifulSoup(gfg_req.text,"html.parser")
 
 data = []
