@@ -1,19 +1,8 @@
 import requests 
 from bs4 import BeautifulSoup 
 
-import proxy_ip
-from dotenv import load_dotenv
-
-load_dotenv()
-PROXY = {
-    'http': f'{proxy_ip.randomProxyPicker()}'
-}
-
-#taking user input 
 user_input = input("Enter something to search: ")
-print("searching...")
-
-google_search = requests.get("https://www.google.com/search?q="+user_input+" geekforgeeks",proxies=PROXY)
+google_search = requests.get("https://www.google.com/search?q="+user_input+" geekforgeeks")
  
 
 #creating b.soup object of google-search
@@ -31,112 +20,79 @@ for parent in soup.find("h3").parents:
             url_to_parse = url_to_parse[1].split('&')
             url = url_to_parse[0]
 
+print(url)
 #fetching webpage and scrapping it
-gfg_req = requests.get(url,proxies=PROXY)
+gfg_req = requests.get(url)
 gfg = BeautifulSoup(gfg_req.text,"html.parser")
-# with open("/home/deenank/Desktop/BeautifulSoup/search.html","w") as f:
-#     f.write(gfg.prettify())
 
-#declaring constants and heading lists
+data = []
 h1_list = gfg.select("h1")
 title = h1_list[0].get_text()
+data.append(title)
 print(title)
-article = gfg.find("article")
-h2_list = gfg.select("h2")
-h3_list = gfg.select("h3")
+articles = gfg.select("article")
+divs = gfg.find_all("div")
 code_list = gfg.find_all("code")
-is_style = True
-h2_hi_hai = False
+gfg_panel = gfg.find_all("gfg-panel")
+article = articles[0]
+i = 0
 
-
-#checking the condition for which type of webpage to scrap
-for h2 in h2_list:
-    if article in h2.parents:
-        if h2.has_attr("class"): 
-            if h2["class"][0] != "tabtitle":
-                h2_hi_hai = True
-        else:
-            h2_hi_hai = True  
-
-
-#if page contains h2tag
-if h2_hi_hai:
-    for h2 in h2_list:
-        if article in h2.parents and is_style:
-            print(h2.get_text())
-            for sib in h2.find_next_siblings():
-                if sib.name == "h2":
-                    break
-                elif sib.name == "ul":
+# div = article.find_all("div")[-1]
+# print(div)
+# for div in article.children: 
+#     if div.name=="div" and div["class"] == "text":
+for c in article.children:
+    if c.name == "div":
+        i=i+1
+        if i==3:
+         for child in c.children:
+            if child.name == "gfg-tabs":
+                for g in gfg_panel:
+                    if child in g.parents:
+                        data.append(g.get_text()+"\n")
+            elif child.name == "div" and child.has_attr("id") and child["id"] == "table_of_content":
+                 continue
+            elif child.name == "p":
+                        data.append(child.get_text()+"\n")
+            elif child.name == "ul":
                     list1 =[]
-                    for child in sib.children:
-                        list1.append(child)
+                    for c in child.children:
+                        list1.append(c)
                     for i in list1:
-                        print(str(list1.index(i)+1)+" " + i.get_text())
-                    print()
-                elif sib.name=="gfg-tabs":
-                    for code in code_list:
-                        for parent in code.parents:
-                            if parent == sib:
-                                print(code.get_text())
-                elif sib.name == "img":
-                    continue
-                elif sib.name == "table":
+                        data.append(str(list1.index(i)+1)+" " + i.get_text()+"\n")
+            elif child.name == "table":
                         header = []
                         rows = []
-                        for i, row in enumerate(sib.find_all('tr')):
+                        for i, row in enumerate(child.find_all('tr')):
                             if i == 0:
                                 header = [el.text.strip() for el in row.find_all('th')]
                             else:
                                 rows.append([el.text.strip() for el in row.find_all('td')])
                         for row in rows:
-                            print(header)
-                            print(row)
-                            print()
-                elif sib.name == "br":
-                    is_style = False
+                            data.append(header)
+                            data.append(row)
+                            print("\n")
+            elif child.name == "br":
                     break
-                else:
-                    print(sib.get_text()) 
-                    print()
-#if page contains h3tags only
-else:
-    for h3 in h3_list:
-        if article in h3.parents and is_style:
-            print(h3.get_text())
-            for sib in h3.find_next_siblings():
-                if sib.name == "h3":
-                    break
-                elif sib.name == "ul":
-                    list1 =[]
-                    for child in sib.children:
-                        list1.append(child)
-                    for i in list1:
-                        print(str(list1.index(i)+1)+" " + i.get_text())
-                    print()
-                elif sib.name=="gfg-tabs":
-                    for code in code_list:
-                        for parent in code.parents:
-                            if parent == sib:
-                                print(code.get_text())
-                elif sib.name == "img":
-                    continue
-                elif sib.name == "table":
-                        header = []
-                        rows = []
-                        for i, row in enumerate(sib.find_all('tr')):
-                            if i == 0:
-                                header = [el.text.strip() for el in row.find_all('th')]
-                            else:
-                                rows.append([el.text.strip() for el in row.find_all('td')])
-                        for row in rows:
-                            print(header)
-                            print(row)
-                            print()
-                elif sib.name == "br":
-                    is_style = False
-                    break
-                else:
-                    print(sib.get_text()) 
-                    print()
-    
+            else:
+                 data.append(child.get_text()+"\n")
+updated_data = []
+for item in data:
+    updated_list = []
+    if "\n" in item:
+        list1 = item.split("\n")
+        for i in list1:  
+            if i != '': 
+                updated_list.append(i)
+
+    up_string = '\n'.join(updated_list)  
+    updated_data.append(up_string)
+
+updated_data.insert(0,title)
+with open("/home/deenank/Desktop/BeautifulSoup/search.html", "w") as file:
+    # file.write(gfg.prettify())
+  for item in updated_data:
+    file.write(item + "\n")
+
+
+
