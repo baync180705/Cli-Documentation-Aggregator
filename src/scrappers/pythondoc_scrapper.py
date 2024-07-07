@@ -21,136 +21,92 @@ soup.prettify()
 #extracting url of python docs
 url_to_parse = ""
 url=""
-for parent in soup.find("h3").parents:
-    if parent.name == 'a':
-        if "docs.python.org" in parent["href"]:
-            # if "tutorial" in parent["href"]: 
-                # print("gvfgdfgdfg " + parent['href'])
-                url_to_parse = parent['href'].split('q=')
-                url_to_parse = url_to_parse[1].split('&')
-                url = url_to_parse[0]
+tutorial=False
+h3_list = soup.find_all("h3")
+google_link_found = False
+for h3 in h3_list:
+ if not google_link_found:
+    for parent in h3.parents:
+        if parent.name == 'a':
+            if "docs.python.org/3/tutorial" in parent["href"]:
+                    # print("tutorial")
+                    url_to_parse = parent['href'].split('q=')
+                    url_to_parse = url_to_parse[1].split('&')
+                    url = url_to_parse[0]
+                    tutorial = True
+                    google_link_found=True
+                    break
 
+            if "docs.python.org/3/library" in parent["href"] and not tutorial:
+                    # print("library")
+                    url_to_parse = parent['href'].split('q=')
+                    url_to_parse = url_to_parse[1].split('&')
+                    url = url_to_parse[0]
+                    tutorial = False
+                    google_link_found=True
+                    break
 
+title=""
+data =[]
+print(url)
 #creating b.soup object of the python docs webpage 
 pyp_url = requests.get(url,proxies=PROXY)
 pyp = BeautifulSoup(pyp_url.text,'html.parser')
 
-#handling the case if there are gaps in user_input
-user_input_array = []
+sections = pyp.find_all("section")
+if tutorial:
+    for section in sections:
+        if section.has_attr("id"):
+            id = section["id"]
+            id = id.replace("-","")
+            if user_input.lower().split(' ')[0] in id:
+                for child in section.children:
+                        if child.name=="h2":
+                            title = child.get_text()
+                            continue
+                        else:
+                            data.append(child.get_text())
 
-#declaring constants and initializing lists for storing heading with h2, dt tags and section tags
-title =""
-h2_hai = False
-dt_hai = False
-h2_list = pyp.select("h2")
-dt_list = pyp.select("dt")
-updated_h2_list = [] 
-section_list = pyp.select("section")
-user_input_array = user_input
-h2_to_search = ""
-dt_to_search = ""
+elif not tutorial:
+    h3_list = pyp.find_all("h3")
+    dt_list = pyp.find_all("dt")
+    is_h3 = False
 
-#getting the h2 title after removing the numerical part
-for i in h2_list:
-    if section_list[0] in i.parents:
-        # print(i)
-        i = i.get_text().split(' ')
-        st = ""
-        for j in i:
-            if j == i[0]:
-                continue
-            elif j == i[-1]:
-                j = j[0:len(j)-2]
-                st = st + j + " "
-            else:
-                st = st + j + " " 
-        updated_h2_list.append(st)
-
-#checking if required content to scrap has h2 heading or not
-for i in updated_h2_list:
-    if " " in user_input:
-        user_input_array = user_input.split(" ")
-        for j in user_input_array:
-            if j.lower() in i: 
-                title = i
-                h2_to_search=i
-                h2_hai = True
-                break
-    else:
-        if user_input.lower() in i: 
-                title = i
-                h2_to_search=i
-                h2_hai = True
-                break
-        
-#checking if required content to scrap has dt heading or not
-for i in dt_list:
-    if " " in user_input:
-        user_input_array = user_input.split(" ")
-        for j in user_input_array:
-            if j.lower() in i.get_text(): 
-                title = i.get_text()
-                dt_to_search = i.get_text()
-                dt_hai = True
-                # print(dt_hai)
-                break
-    else:
-        if user_input.lower() in i.get_text(): 
-                title = i.get_text()
-                dt_to_search = i.get_text()
-                dt_hai = True
-                break
-#function to get rid of special characters from h2
-def get_text(i):
-        i = i.get_text().split(' ')
-        st = ""
-        for j in i:
-            if j == i[0]:
-                continue
-            elif j == i[-1]:
-                j = j[0:len(j)-2]
-                st = st + j + " "
-            else:
-                st = st + j + " " 
-        return st
-
-#scrapping text if h2 is the heading
-if h2_hai:
-    print(h2_to_search)
-    for h2 in h2_list:
-        if section_list[0] in h2.parents:
-            if h2_to_search == get_text(h2):
-                # print("ehdfhf")
-                for sib in h2.find_next_siblings():
-                    if sib.name != "h2" and sib.name != "table":
-                        print(sib.get_text())
-                        print()
-                    elif sib.name == "table":
-                        header = []
-                        rows = []
-                        for i, row in enumerate(sib.find_all('tr')):
-                            if i == 0:
-                                header = [el.text.strip() for el in row.find_all('th')]
-                            else:
-                                rows.append([el.text.strip() for el in row.find_all('td')])
-                        for row in rows:
-                            print(header)
-                            print(row)
-                    elif sib.name == "h2":
-                        break
-                print()
-        
-# scrapping text if dt is the heading
-if dt_hai:
-    # print(dt_to_search)
-    for d in dt_list:
-        if dt_to_search in d.get_text():
-                for child in d.parent.children:
-                    print(child.get_text())
-                print()
+    for h3 in h3_list:
+      if not is_h3:  
+        for child in h3.children:
+            if child.name == "a":
+                if user_input.lower().split(" ")[0] in child["href"].split("-"):
+                    title = h3.get_text()
+                    for sib in h3.next_siblings():
+                        data.append(sib.get_text()) 
+                    is_h3=True
+                    break
+    for dt in dt_list:
+        if not is_h3:
+            if dt.has_attr("id") and user_input.lower().split(" ")[0] in dt["id"]:
+                title = dt.get_text()
+                siblings = dt.find_next_siblings()
+                for sib in siblings:
+                    data.append(sib.get_text())
+                break        
 
 
+updated_data = []
+for item in data:
+    updated_list = []
+    if "\n" in item:
+        list1 = item.split("\n")
+        for i in list1:  
+            if i != '': 
+                updated_list.append(i)
 
+    up_string = '\n'.join(updated_list)  
+    updated_data.append(up_string)
 
-
-
+updated_data.insert(0,title)
+with open("/home/deenank/Desktop/BeautifulSoup/search.html", "w") as file:
+    # file.write(gfg.prettify())
+  for item in updated_data:
+    file.write(item + "\n")
+          
