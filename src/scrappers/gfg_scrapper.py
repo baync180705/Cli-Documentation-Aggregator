@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup 
 import proxy_ip
 from dotenv import load_dotenv
+import os
 
 load_dotenv()
 PROXY = {
@@ -97,7 +98,7 @@ for item in data:
     updated_data.append(up_string)
 
 updated_data.insert(0,title)
-with open("/home/deenank/Desktop/BeautifulSoup/search.html", "w") as file:
+with open(os.path.join(os.path.dirname(__file__),'data/search.html'), "w") as file:
     # file.write(gfg.prettify())
   for item in updated_data:
     file.write(item + "\n")
