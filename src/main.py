@@ -1,3 +1,4 @@
+from scrappers import react_scraper
 import argparse
 
 def main():
@@ -32,6 +33,7 @@ def search(args):
             print('gfg')
         case 'react':
             print('react')
+            print(react_scraper.scrape(args.query[0]))
         case 'flutter':
             print('flutter')
         case 'express':
