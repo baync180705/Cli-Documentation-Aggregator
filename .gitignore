@@ -1,4 +1,5 @@
-venv
+myvenv
 .env
 src/scrappers/data
 __pycache__
+/home/deenank/Desktop/New Folder/Cli-Documentation-Aggregator/myvenv
