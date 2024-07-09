@@ -1,6 +1,8 @@
 import requests 
 from bs4 import BeautifulSoup 
 import proxy_ip
+import re
+import pandas as pd
 from dotenv import load_dotenv
 import os
 
@@ -89,7 +91,25 @@ elif library:
                 if user_input.lower().split(" ")[0] in child["href"].split("-"):
                     title = h3.get_text()
                     for sib in h3.next_siblings():
-                        data.append(sib.get_text()) 
+                        if sib.name == "div" and sib.child.name == "table":
+                            body = sib.find_all("tr")
+                            head = body[0] 
+                            body_rows = body[1:]
+                            headings = []
+                            for item in head.find_all("th"):
+                                item = (item.text).rstrip("\n")
+                                headings.append(item)
+                            all_rows = []
+                            for row_num in range(len(body_rows)):       
+                                row = []
+                                for row_item in body_rows[row_num].find_all("td"):   
+                                            aa = re.sub("(\xa0)|(\n)|,","",row_item.text)
+                                            row.append(aa)
+                                all_rows.append(row)
+                            df = pd.DataFrame(data=all_rows,columns=headings)
+                            data.append(df)
+                        else:
+                            data.append(sib.get_text()) 
                     is_h3=True
                     break
     for dt in dt_list:
