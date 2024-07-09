@@ -80,12 +80,43 @@ if tutorial:
                             data.append(child.get_text())
 
 elif library:
+    h2_list = pyp.find_all("h2")
     h3_list = pyp.find_all("h3")
     dt_list = pyp.find_all("dt")
     is_h3 = False
+    is_h2 = False
+
+    for h2 in h2_list:
+      if not is_h3 and not is_h2:  
+        for child in h2.children:
+            if child.name == "a":
+                if user_input.lower().split(" ")[0] in child["href"].split("-"):
+                    data.append(h2.get_text())
+                    for sib in h2.next_siblings():
+                        if sib.name == "div" and sib.child.name == "table":
+                            body = sib.find_all("tr")
+                            head = body[0] 
+                            body_rows = body[1:]
+                            headings = []
+                            for item in head.find_all("th"):
+                                item = (item.text).rstrip("\n")
+                                headings.append(item)
+                            all_rows = []
+                            for row_num in range(len(body_rows)):       
+                                row = []
+                                for row_item in body_rows[row_num].find_all("td"):   
+                                            aa = re.sub("(\xa0)|(\n)|,","",row_item.text)
+                                            row.append(aa)
+                                all_rows.append(row)
+                            df = pd.DataFrame(data=all_rows,columns=headings)
+                            data.append(df)
+                        else:
+                            data.append(sib.get_text()) 
+                    is_h2=True
+                    break
 
     for h3 in h3_list:
-      if not is_h3:  
+      if not is_h3 and not is_h2:  
         for child in h3.children:
             if child.name == "a":
                 if user_input.lower().split(" ")[0] in child["href"].split("-"):
@@ -113,7 +144,7 @@ elif library:
                     is_h3=True
                     break
     for dt in dt_list:
-        if not is_h3:
+        if not is_h3 and not is_h2:
             if dt.has_attr("id") and user_input.lower().split(" ")[0] in dt["id"]:
                 title = dt.get_text()
                 siblings = dt.find_next_siblings()
@@ -148,8 +179,12 @@ for item in data:
     updated_data.append(up_string)
 
 updated_data.insert(0,title)
-with open(os.path.join(os.path.dirname(__file__),'data/search.html'), "w") as file:
-    # file.write(gfg.prettify())
-  for item in updated_data:
-    file.write(item + "\n")
-          
+
+with open(os.path.join(os.path.dirname(__file__),'data/search.html', "w")) as file:
+   for item in data:
+        if isinstance(item, pd.DataFrame):
+            with open(os.path.join(os.path.dirname(__file__),'data/search.html'), "w") as csv_file:
+                item.to_csv(csv_file, sep='\t') 
+        else:
+            file.write(item + "\n\n") 
+
