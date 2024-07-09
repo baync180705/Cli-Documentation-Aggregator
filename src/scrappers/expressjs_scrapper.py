@@ -1,15 +1,15 @@
 import requests 
 from bs4 import BeautifulSoup 
-import proxy_ip
-# from dotenv import load_dotenv
+from scrappers.proxy_ip import randomProxyPicker
+from dotenv import load_dotenv
 
 #loading env variables
-# load_dotenv()
+load_dotenv()
 
 
 #fetching proxy url
 PROXY = {
-    'http': f'{proxy_ip.randomProxyPicker()}'
+    'http': f'{randomProxyPicker()}'
 }
 
 #getting user_input and fetching google search results

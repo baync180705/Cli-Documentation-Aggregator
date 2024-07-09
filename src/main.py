@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 from scrappers import pythondoc_scrapper
 from scrappers import gfg_scrapper
 from scrappers import expressjs_scrapper
+from scrappers import ai_generate
 
 load_dotenv()
 

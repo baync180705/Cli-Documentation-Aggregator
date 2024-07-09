@@ -1,12 +1,12 @@
 import requests 
 from bs4 import BeautifulSoup 
-import proxy_ip
-from dotenv import load_dotenv
-import os
+from scrappers.proxy_ip import randomProxyPicker
+# from dotenv import load_dotenv
 
-load_dotenv()
+
+# load_dotenv()
 PROXY = {
-    'http': f'{proxy_ip.randomProxyPicker()}'
+    'http': f'{randomProxyPicker()}'
 }
 
 #taking user input 
