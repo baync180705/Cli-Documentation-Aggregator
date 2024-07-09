@@ -1,10 +1,18 @@
 import argparse
 import os
 import pathlib
+from dotenv import load_dotenv
+
+# from scrappers import ai_generate
+from scrappers import pythondoc_scrapper
+from scrappers import gfg_scrapper
+from scrappers import expressjs_scrapper
+
+load_dotenv()
 
 DATA_DIR = '.local/share/webman/'
 parser = None
-scrapers=['gfg', 'react', 'flutter', 'express', 'python']
+scrapers=['gfg', 'react', 'flutter', 'express', 'python', 'ai']
 
 def main():
     HOME = os.getenv('HOME')
@@ -44,8 +52,9 @@ def main():
     args.func(args)
 
 def search(args):
-    target_dir = os.path.join(DATA_DIR, args.scraper[0])
-    target_path = os.path.join(target_dir, args.query[0])
+    query = args.query[0]
+    target_dir = os.path.join(DATA_DIR, query)
+    target_path = os.path.join(target_dir, query)
     if os.path.exists(target_path):
         print('Article already cached, displaying it..')
         cat_file(target_path)
@@ -54,18 +63,20 @@ def search(args):
     article = None
     match args.scraper[0]:
         case 'gfg': 
-            article = f'gfg {args.query[0]}'
+            article = gfg_scrapper.search(query)
         case 'react':
-            article = f'react {args.query[0]}'
+            article = f'react {query}'
         case 'flutter':
-            article = f'flutter {args.query[0]}'
+            article = f'flutter {query}'
         case 'express':
-            article = f'express {args.query[0]}'
+            article = expressjs_scrapper.search(query)
         case 'python':
-            article = f'python {args.query[0]}'
+            article = pythondoc_scrapper.search(query)
+        case 'ai':
+            article = ai_generate.generate(query)
 
     if article == None:
-        article = f'ai {args.query[0]}'
+        article = f'ai {query}'
 
     print(article)
     
