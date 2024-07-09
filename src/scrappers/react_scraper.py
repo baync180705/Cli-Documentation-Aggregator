@@ -1,43 +1,45 @@
-from transformers import GPT2LMHeadModel, GPT2Tokenizer
+#importing packages
 from bs4 import BeautifulSoup
 import os
 import requests
-import proxy_ip
+from proxy_ip import randomProxyPicker
 from dotenv import load_dotenv
+import json
 
-load_dotenv()
+load_dotenv() #load the env into python's os env
 
+#initialized proxies and paths
 FETCH_REACT_DOC = os.getenv('FETCH_REACT_DOC')
 FETCH_REACT_HOME = os.getenv('FETCH_REACT_HOME')
 HOME_PATH = os.path.join(os.path.dirname(__file__),'data/react-home.html')
 
 PROXY = {
-    'http': f'{proxy_ip.randomProxyPicker()}'
+    'http': f'{randomProxyPicker()}'
 }
+AI_MODEL_SERVER = os.getenv('AI_MODEL_SERVER')
 
-model_name = 'gpt2'
-model = GPT2LMHeadModel.from_pretrained(model_name)
-tokenizer = GPT2Tokenizer.from_pretrained(model_name)
-
+#variables for multiple instances of a keyword
 index = 1
-keyword = 'hooks'
 
+keyword = 'hooks' #keyword entered
+
+# Fetches the react home page
 def reactDocsHomePageFetcher():
     data = requests.get(FETCH_REACT_DOC, proxies=PROXY)
     with open(HOME_PATH,'w') as file:
         file.write(data.text)
 
+reactDocsHomePageFetcher()
+
+#creates bs4 soup object
 def soupeObjectCreator():
-    if(os.path.exists(HOME_PATH)):
-        with open(HOME_PATH) as f:
-            react_doc = f.read()
-        soupe = BeautifulSoup(react_doc,'html.parser')
+    with open(HOME_PATH) as f:
+        react_doc = f.read()
+    soupe = BeautifulSoup(react_doc,'html.parser')
 
-        return soupe
-    else:
-        reactDocsHomePageFetcher()
-        soupeObjectCreator()
+    return soupe
 
+#fetches all urls containing the keyword
 def fetchUrlFromKeyword(keyword):
     soupe = soupeObjectCreator()
     anchors = soupe.find_all('a')
@@ -59,10 +61,10 @@ def fetchUrlFromKeyword(keyword):
 fetchedUrls = fetchUrlFromKeyword(keyword.lower())
 
  
-paragraphs = []
+paragraphs = [] #initialized an empty list which later conatins all the scraped data
 
+#scraped pages which are internally hyperlinked in the home page
 def inPageRouteScrapper(url):
-
     soupe = soupeObjectCreator()
     anchor = soupe.find('a', href = url)
     parent = anchor.parent
@@ -70,12 +72,13 @@ def inPageRouteScrapper(url):
     for sibling in parent.next_siblings:
         if(sibling.name == 'p'):
             cleaned_text = ' '.join(sibling.get_text().replace('\n', ' ').split())
-            paragraphs.append(cleaned_text)
+            paragraphs.append(cleaned_text) #appends to the paragraphs list
         elif(sibling.name == None):
             continue
         else:
             break
 
+#scraped pages which are externally hyperlinked in the home page
 def externalRouteScrapper(url, index, keyword):
     data = requests.get(url)
 
@@ -93,20 +96,7 @@ def externalRouteScrapper(url, index, keyword):
         if(cleaned_text!='Is this page useful?'):
             paragraphs.append(cleaned_text)
 
-
-def generate_article(sentences):
-    prompt = "\n".join(sentences)[:1024]
-
-    
-    inputs = tokenizer.encode(prompt, return_tensors='pt')
-    
-    outputs = model.generate(inputs, max_length=1024, num_return_sequences=1, no_repeat_ngram_size=2, early_stopping=True)
-    
-    article = tokenizer.decode(outputs[0], skip_special_tokens=True)
-    return article
-
-
-
+#Shows the result or prints an error depending on the availability of the keyword
 if(fetchedUrls != 'ERROR'):
     for url in fetchedUrls:
         if(url[0] == '#'):
@@ -115,9 +105,16 @@ if(fetchedUrls != 'ERROR'):
         if(url[0]=='/'):
             externalRouteScrapper(FETCH_REACT_HOME+url,index, keyword)
             index += 1
-    article = generate_article(paragraphs).replace('. ','.\n').replace('<','\n<').replace('>','>\n')
-
-    with open(os.path.join(os.path.dirname(__file__),f'data/{keyword}.txt'),'w') as f:
-        f.write(article)
+    
+    try:
+        article = (requests.post(AI_MODEL_SERVER ,headers = {'Content-Type':'application/json'}, data=json.dumps(paragraphs))).text #throws paragraph to an ai model for documentation
+    except:
+        article = '. '.join(paragraphs) #raw data if the ai model apis do not work
+    finally:
+        #save the result in a file
+        article = article.replace('. ','.\n').replace('<','\n<').replace('>','>\n').replace(': ',':\n') #formats the data
+        with open(os.path.join(os.path.dirname(__file__),f'data/{keyword}.txt'),'w') as f:
+            f.write(article)
 else:
-    print(f'ERROR: keyword: {keyword} not found. Please try with a different keyword.')
+    print(f'ERROR: keyword: {keyword} not found. Please try with a different keyword.') #catches error if keyword is not found
+
