@@ -23,14 +23,15 @@ soup.prettify()
 url_to_parse = ""
 url=""
 tutorial=False
+library=False
+reference=False
 h3_list = soup.find_all("h3")
 google_link_found = False
 for h3 in h3_list:
  if not google_link_found:
     for parent in h3.parents:
         if parent.name == 'a':
-            if "docs.python.org/3/tutorial" in parent["href"]:
-                    # print("tutorial")
+            if "docs.python.org/3/tutorial" in parent["href"] and url=="":
                     url_to_parse = parent['href'].split('q=')
                     url_to_parse = url_to_parse[1].split('&')
                     url = url_to_parse[0]
@@ -38,15 +39,23 @@ for h3 in h3_list:
                     google_link_found=True
                     break
 
-            if "docs.python.org/3/library" in parent["href"] and not tutorial:
+            if "docs.python.org/3/library" in parent["href"] and url=="":
                     # print("library")
                     url_to_parse = parent['href'].split('q=')
                     url_to_parse = url_to_parse[1].split('&')
                     url = url_to_parse[0]
-                    tutorial = False
+                    library = True
                     google_link_found=True
                     break
-
+            
+            if "docs.python.org/3/reference" in parent["href"] and url=="":
+                    url_to_parse = parent['href'].split('q=')
+                    url_to_parse = url_to_parse[1].split('&')
+                    url = url_to_parse[0]
+                    reference = True
+                    google_link_found=True
+                    break
+            
 title=""
 data =[]
 print(url)
@@ -54,8 +63,8 @@ print(url)
 pyp_url = requests.get(url,proxies=PROXY)
 pyp = BeautifulSoup(pyp_url.text,'html.parser')
 
-sections = pyp.find_all("section")
 if tutorial:
+    sections = pyp.find_all("section")
     for section in sections:
         if section.has_attr("id"):
             id = section["id"]
@@ -68,7 +77,7 @@ if tutorial:
                         else:
                             data.append(child.get_text())
 
-elif not tutorial:
+elif library:
     h3_list = pyp.find_all("h3")
     dt_list = pyp.find_all("dt")
     is_h3 = False
@@ -92,6 +101,19 @@ elif not tutorial:
                     data.append(sib.get_text())
                 break        
 
+elif reference:
+    sections = pyp.find_all("section")
+    for section in sections:
+        if section.has_attr("id"):
+            id = section["id"]
+            id = id.replace("-","")
+            if user_input.lower().split(' ')[0] in id:
+                for child in section.children:
+                        if child.name=="h2":
+                            title = child.get_text()
+                            continue
+                        else:
+                            data.append(child.get_text())
 
 updated_data = []
 for item in data:
