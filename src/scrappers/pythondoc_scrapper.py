@@ -1,27 +1,21 @@
 import requests 
 from bs4 import BeautifulSoup 
-# import scrappers.proxy_ip
+
 import os
 import pandas as pd
 import re
 
 
-# PROXY = {
-#     'http': f'{proxy_ip.randomProxyPicker()}'
-# }
+def search(query, PROXY): 
+#defining a search function to be called for scrapping python docs
 
-#taking user-input and searching google
-# user_input = input("Enter something to search: ")
-# print("searching...")
-def search(query, PROXY):
-    query_first_word = query.lower().split()[0]
-    google_search = requests.get("https://www.google.com/search?q="+query+" python docs",proxies=PROXY)
+    google_search = requests.get("https://www.google.com/search?q="+query+" python docs",proxies=PROXY) #fetches relevant google result
  
     #creating b.soup object of the search_results 
     soup = BeautifulSoup(google_search.text,"html.parser") 
     soup.prettify()
 
-    #extracting url of python docs
+    #extracting url of python docs and tracking if the relevant url is from tutorial/library/reference webpage
     url_to_parse = ""
     url=""
     tutorial=False
@@ -30,12 +24,9 @@ def search(query, PROXY):
     h3_list = soup.find_all("h3")
     google_link_found = False
     for h3 in h3_list:
-    #  print(h3)
         if not google_link_found:
             for parent in h3.parents:
-            # print(h3)
                 if parent.name == 'a':
-                    # print(parent["href"])
                     if "docs.python.org/3/tutorial" in parent["href"] and url=="":
                             url_to_parse = parent['href'].split('q=')
                             url_to_parse = url_to_parse[1].split('&')
@@ -45,7 +36,6 @@ def search(query, PROXY):
                             break
 
                     if "docs.python.org/3/library" in parent["href"] and url=="":
-                            # print("library")
                             url_to_parse = parent['href'].split('q=')
                             url_to_parse = url_to_parse[1].split('&')
                             url = url_to_parse[0]
@@ -61,14 +51,14 @@ def search(query, PROXY):
                             google_link_found=True
                             break
 
-    title=""
+
     data =[]
-    # print(url)
+
     #creating b.soup object of the python docs webpage 
     pyp_url = requests.get(url,proxies=PROXY)
     pyp = BeautifulSoup(pyp_url.text,'html.parser')
 
-
+# scraps tutorial webpage by scrapping sections
     if tutorial:
         sections = pyp.find_all("section")
         for section in sections:
@@ -83,13 +73,16 @@ def search(query, PROXY):
                             # else:
                                 data.append(child.get_text())
 
+# scraps library webpage by scrapping h2/h3/dt tags based upon user input
     elif library:
+        #creating lists and conditions
         h2_list = pyp.find_all("h2")
         h3_list = pyp.find_all("h3")
         dt_list = pyp.find_all("dt")
         is_h3 = False
         is_h2 = False
 
+    #checking h2 tags based upon user input and handles table tags and other cases
         for h2 in h2_list:
             if not is_h3 and not is_h2:  
                 for child in h2.children:
@@ -116,9 +109,10 @@ def search(query, PROXY):
                                     data.append(df)
                                 else:
                                     data.append(sib.get_text()) 
-                            is_h2=True
+                            is_h2=True #if relevant h2 is found then loop is breaked
                             break
 
+    #checking h3 tags based upon user input and handles table tags and other cases
         for h3 in h3_list:
             if not is_h3 and not is_h2:  
                 for child in h3.children:
@@ -145,17 +139,20 @@ def search(query, PROXY):
                                     data.append(df)
                                 else:
                                     data.append(sib.get_text()) 
-                            is_h3=True
+                            is_h3=True  #if relevant h3 is found then loop is breaked
                             break
+
+     #checking dt tags based upon user input                    
         for dt in dt_list:
             if not is_h3 and not is_h2:
                 if dt.has_attr("id") and query.lower().split(" ")[0] in dt["id"]:
-                    title = dt.get_text()
+                    data.append(dt.get_text())
                     siblings = dt.find_next_siblings()
                     for sib in siblings:
                         data.append(sib.get_text())
                     break        
 
+# scraps reference webpage by scrapping sections based upon user input
     elif reference:
         sections = pyp.find_all("section")
         for section in sections:
@@ -164,11 +161,13 @@ def search(query, PROXY):
                 id = id.replace("-","")
                 if query.lower().split(' ')[0] in id:
                     for child in section.children:
-                            if child.name=="h2":
-                                title = child.get_text()
-                                continue
-                            else:
+                            # if child.name=="h2":
+                            #     title = child.get_text()
+                            #     continue
+                            # else:
                                 data.append(child.get_text())
+
+# formats the data by removing excess of \n 
     updated_data = []
     for item in data:
         updated_list = []
@@ -181,8 +180,9 @@ def search(query, PROXY):
         up_string = '\n'.join(updated_list)  
         updated_data.append(up_string)
 
-    # updated_data.insert(0,title)
+
     article = ""
+    #saving the data into article variable and dataframes into  a csv file in data directory
     for item in data:
          if isinstance(item, pd.DataFrame):
               with open(os.path.join(os.path.dirname(__file__),f'data/{query.split(" ")[0]}.csv'), "w") as csv_file:
@@ -190,13 +190,8 @@ def search(query, PROXY):
          else:
             article += item + '\n'
 
-    if len(article.strip()) == 0:
+    if len(article.strip()) == 0: #if no result is fetched then None is returned for the AI to be called
         return None
     else:
-        return article
+        return article #returns data
 
-    # with open(os.path.join(os.path.dirname(__file__),'data/search.html'), "w") as file:
-    #     # file.write(gfg.prettify())
-    #   for item in updated_data:
-    #     file.write(item + "\n")
-          
