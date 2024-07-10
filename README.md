@@ -30,7 +30,7 @@
 
     
 <p>User can use : doc show <scrapper> to show previous saved results and select the file based on index</p>
-    <img src="./assets/WhatsApp Image 2024-07-10 at 11.01.40 PM.jpeg">
+    <img src="./assets/WhatsApp Image 2024-07-10 at 10.29.58 PM.jpeg">
 
 <p>User can use : doc remove <scrapper> to show previous saved results and select the file based on index to delete it</p>
    <img src="./assets/WhatsApp Image 2024-07-10 at 10.30.31 PM.jpeg">
