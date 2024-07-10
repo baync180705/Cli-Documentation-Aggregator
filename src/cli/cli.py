@@ -55,8 +55,9 @@ def main():
     args.func(args)
 
 def search(args):
+    scraper = args.scraper[0]
     query = args.query[0]
-    target_dir = os.path.join(DATA_DIR, query)
+    target_dir = os.path.join(DATA_DIR, scraper)
     target_path = os.path.join(target_dir, query)
     if os.path.exists(target_path):
         print('Article already cached, displaying it..')
@@ -102,7 +103,7 @@ def doc(args):
 def cli(ar):
     exit = False
     while not exit:
-        print('uwu ', end='')
+        print('>>> ', end='\n')
         command = input()
         match command.strip():
             case 'exit':
