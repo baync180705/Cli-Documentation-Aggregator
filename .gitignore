@@ -2,5 +2,6 @@ myvenv
 venv
 .env
 src/scrappers/data
+src/proxy_ip/data
 __pycache__
 /home/deenank/Desktop/New Folder/Cli-Documentation-Aggregator/myvenv
