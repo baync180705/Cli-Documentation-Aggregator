@@ -2,7 +2,7 @@
 from bs4 import BeautifulSoup
 import os
 import requests
-from proxy_ip import randomProxyPicker
+from proxy_ip.proxy_ip import randomProxyPicker
 from dotenv import load_dotenv
 import json
 
