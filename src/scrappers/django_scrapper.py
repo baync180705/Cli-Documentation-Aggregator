@@ -44,6 +44,7 @@ def fetchRelevantPage(query, PROXY):
         data = requests.get(url, proxies= PROXY )
         with open(os.path.join(os.path.dirname(__file__),f'data/django-{query.lower()}.html'),'w') as f:
             f.write(data.text)
+        return('ok')
     else:
         return None
 

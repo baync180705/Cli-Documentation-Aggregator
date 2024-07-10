@@ -15,7 +15,7 @@ load_dotenv()
 
 DATA_DIR = '.local/share/webman/'
 parser = None
-scrapers=['gfg', 'react', 'flutter', 'express', 'python', 'ai']
+scrapers=['gfg', 'react', 'flutter', 'express', 'python', 'ai', 'django']
 
 def main():
     HOME = os.getenv('HOME')

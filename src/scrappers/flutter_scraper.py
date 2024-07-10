@@ -65,8 +65,10 @@ def fetchRelevantPage(query, PROXY):
 
         with open(os.path.join(os.path.dirname(__file__),f'data/flutter-{query.lower()}.html'),'w') as f:
             f.write(data.text)
+        return('ok')
     else:
         return None #returns None if the keyword is not found
+
 
 
 #generates the paragraph list conatining all the scraped data
