@@ -60,7 +60,6 @@ def randomProxyPicker():
         with open(os.path.join(os.path.dirname(__file__),'data/time.txt'),'w') as f:
             f.write(f'{datetime.now().hour}:{datetime.now()}')
         generateFile()
-        print('generated')
     proxies = createProxyList()
     return random.choice(proxies)
 
