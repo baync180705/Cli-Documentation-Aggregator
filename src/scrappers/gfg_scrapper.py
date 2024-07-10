@@ -1,11 +1,6 @@
 import requests 
 from bs4 import BeautifulSoup 
-# import proxy_ip
 import os
-
-# PROXY = {
-#     'http': f'{proxy_ip.randomProxyPicker()}'
-# }
 
 #taking user input 
 # user_input = input("Enter something to search: ")
