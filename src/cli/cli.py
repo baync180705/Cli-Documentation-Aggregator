@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 import scrappers.pythondoc_scrapper as python
 import scrappers.expressjs_scrapper as express
 import scrappers.gfg_scrapper as gfg
+from ai_fallback import ai_generate as ai
 from scrappers.proxy_ip import randomProxyPicker
 
 load_dotenv()
