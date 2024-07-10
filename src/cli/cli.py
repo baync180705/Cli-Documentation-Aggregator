@@ -154,5 +154,3 @@ def generate_proxy():
     return {
         'http': f'{randomProxyPicker()}'
     }
-# if __name__ == "__main__":
-#     main()
