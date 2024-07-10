@@ -4,7 +4,7 @@ import requests
 import json
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
-from proxy_ip import randomProxyPicker
+from proxy_ip.proxy_ip import randomProxyPicker
 from selenium import webdriver
 
 
