@@ -3,6 +3,8 @@ from bs4 import BeautifulSoup
 import proxy_ip
 from dotenv import load_dotenv
 import os
+import pandas as pd
+import re
 
 load_dotenv()
 PROXY = {
@@ -70,17 +72,23 @@ for c in article.children:
                     for i in list1:
                         data.append(str(list1.index(i)+1)+" " + i.get_text()+"\n")
             elif child.name == "table":
-                        header = []
-                        rows = []
-                        for i, row in enumerate(child.find_all('tr')):
-                            if i == 0:
-                                header = [el.text.strip() for el in row.find_all('th')]
-                            else:
-                                rows.append([el.text.strip() for el in row.find_all('td')])
-                        for row in rows:
-                            data.append(header)
-                            data.append(row)
-                            print("\n")
+                            data.append(f"///RESPECTIVE TABLE IS SAVED IN {user_input.split(" ")[0]}.csv FILE")
+                            body = child.find_all("tr")
+                            head = body[0] 
+                            body_rows = body[1:]
+                            headings = []
+                            for item in head.find_all("th"):
+                                item = (item.text).rstrip("\n")
+                                headings.append(item)
+                            all_rows = []
+                            for row_num in range(len(body_rows)):       
+                                row = []
+                                for row_item in body_rows[row_num].find_all("td"):   
+                                            aa = re.sub("(\xa0)|(\n)|,","",row_item.text)
+                                            row.append(aa)
+                                all_rows.append(row)
+                            df = pd.DataFrame(data=all_rows,columns=headings)
+                            data.append(df)
             elif child.name == "br":
                     break
             else:
@@ -98,10 +106,18 @@ for item in data:
     updated_data.append(up_string)
 
 updated_data.insert(0,title)
-with open(os.path.join(os.path.dirname(__file__),'data/search.html'), "w") as file:
-    # file.write(gfg.prettify())
-  for item in updated_data:
-    file.write(item + "\n")
+# with open(os.path.join(os.path.dirname(__file__),'data/search.html'), "w") as file:
+#     # file.write(gfg.prettify())
+#   for item in updated_data:
+#     file.write(item + "\n")
 
+# updated_data.insert(0,title)
+with open(os.path.join(os.path.dirname(__file__),f'data/{user_input.split(" ")[0]}.html'), "w") as file:
+   for item in data:
+        if isinstance(item, pd.DataFrame):
+            with open(os.path.join(os.path.dirname(__file__),f'data/{user_input.split(" ")[0]}.csv'), "w") as csv_file:
+                item.to_csv(csv_file, sep='\t') 
+        else:
+            file.write(item) 
 
 
