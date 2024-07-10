@@ -1,17 +1,15 @@
 import requests 
 from bs4 import BeautifulSoup 
-import proxy_ip
-from dotenv import load_dotenv
+# import proxy_ip
 import os
 
-load_dotenv()
-PROXY = {
-    'http': f'{proxy_ip.randomProxyPicker()}'
-}
+# PROXY = {
+#     'http': f'{proxy_ip.randomProxyPicker()}'
+# }
 
 #taking user input 
 # user_input = input("Enter something to search: ")
-def search(query):
+def search(query, PROXY):
     google_search = requests.get("https://www.google.com/search?q="+query+" geekforgeeks",proxies=PROXY)
  
 

@@ -3,9 +3,6 @@ from bs4 import BeautifulSoup
 import os
 import requests
 import proxy_ip
-from dotenv import load_dotenv
-
-load_dotenv()
 
 FETCH_REACT_DOC = os.getenv('FETCH_REACT_DOC')
 FETCH_REACT_HOME = os.getenv('FETCH_REACT_HOME')

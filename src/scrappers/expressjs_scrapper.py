@@ -1,6 +1,6 @@
 import requests 
 from bs4 import BeautifulSoup 
-import proxy_ip
+# import proxy_ip
 # from dotenv import load_dotenv
 
 #loading env variables
@@ -8,13 +8,13 @@ import proxy_ip
 
 
 #fetching proxy url
-PROXY = {
-    'http': f'{proxy_ip.randomProxyPicker()}'
-}
+# PROXY = {
+#     'http': f'{proxy_ip.randomProxyPicker()}'
+# }
 
 #getting user_input and fetching google search results
 # user_input = input("Enter something to search: ")
-def search(query):
+def search(query, PROXY):
     query = query.lower()
     google_search = requests.get("https://www.google.com/search?q="+query+" expressjs documentation",proxies=PROXY)
 
