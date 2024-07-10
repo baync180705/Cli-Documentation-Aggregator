@@ -55,8 +55,9 @@ def main():
     args.func(args)
 
 def search(args):
+    scraper = args.scraper[0]
     query = args.query[0]
-    target_dir = os.path.join(DATA_DIR, query)
+    target_dir = os.path.join(DATA_DIR, scraper)
     target_path = os.path.join(target_dir, query)
     if os.path.exists(target_path):
         print('Article already cached, displaying it..')
@@ -64,7 +65,7 @@ def search(args):
         return
         
     article = None
-    match args.scraper[0]:
+    match scraper:
         case 'gfg': 
             article = gfg.search(query, generate_proxy())
         case 'react':
@@ -78,9 +79,9 @@ def search(args):
         case 'ai':
             article = ai.generate(query)
 
-    if article == None and args.scraper[0] != 'ai': # to prevent recursion
+    if article == None and scraper != 'ai': # to prevent recursion
         print('query not found, generating ai article')
-        article = f'ai {query}'
+        article = ai.generate(scraper + query)
 
     print(article)
     
