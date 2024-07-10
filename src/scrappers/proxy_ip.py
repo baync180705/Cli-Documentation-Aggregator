@@ -52,13 +52,13 @@ def timeFileUpdateCheck(hour, minute):
 def randomProxyPicker():
     if(os.path.exists(os.path.join(os.path.dirname(__file__),'data/time.txt'))):
         toCheck = timeFileUpdateCheck(f'{datetime.now().hour}',f'{datetime.now().minute}')
-        with open(os.path.join(os.path.dirname(__file__),'data/time.txt'),'w') as f:
-            f.write(f'{datetime.now().hour}:{datetime.now()}')
     else:
         with open(os.path.join(os.path.dirname(__file__),'data/time.txt'),'w') as f:
             f.write(f'{datetime.now().hour}:{datetime.now()}')
         toCheck = True
     if(toCheck == True): 
+        with open(os.path.join(os.path.dirname(__file__),'data/time.txt'),'w') as f:
+            f.write(f'{datetime.now().hour}:{datetime.now()}')
         generateFile()
         print('generated')
     proxies = createProxyList()
