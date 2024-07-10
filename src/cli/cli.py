@@ -3,10 +3,11 @@ import os
 import pathlib
 from dotenv import load_dotenv
 
-# import scrappers.ai_generate
 import scrappers.pythondoc_scrapper as python
 import scrappers.expressjs_scrapper as express
 import scrappers.gfg_scrapper as gfg
+import scrappers.react_scraper as react
+import scrappers.flutter_scraper as flutter
 from ai_fallback import ai_generate as ai
 from scrappers.proxy_ip import randomProxyPicker
 
@@ -67,9 +68,9 @@ def search(args):
         case 'gfg': 
             article = gfg.search(query, generate_proxy())
         case 'react':
-            article = f'react {query}'
+            article = react.search(query, generate_proxy())
         case 'flutter':
-            article = f'flutter {query}'
+            article = flutter.search(query, generate_proxy())
         case 'express':
             article = express.search(query, generate_proxy())
         case 'python':
@@ -77,7 +78,8 @@ def search(args):
         case 'ai':
             article = ai.generate(query)
 
-    if article == None:
+    if article == None and args.scraper[0] != 'ai': # to prevent recursion
+        print('query not found, generating ai article')
         article = f'ai {query}'
 
     print(article)

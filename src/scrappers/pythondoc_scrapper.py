@@ -189,7 +189,11 @@ def search(query, PROXY):
                 item.to_csv(csv_file, sep='\t') 
          else:
             article += item + '\n'
-    return article
+
+    if len(article.strip()) == 0:
+        return None
+    else:
+        return article
 
     # with open(os.path.join(os.path.dirname(__file__),'data/search.html'), "w") as file:
     #     # file.write(gfg.prettify())

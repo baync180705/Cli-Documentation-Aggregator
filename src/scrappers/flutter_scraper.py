@@ -2,22 +2,22 @@ import os
 import requests
 from transformers import GPT2LMHeadModel, GPT2Tokenizer
 from bs4 import BeautifulSoup
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 from proxy_ip import randomProxyPicker
 from selenium import webdriver
 
 
-load_dotenv()
+# load_dotenv()
 
 keyword = 'sgvusb'
 
 FETCH_FLUTTER_SEARCH = os.getenv('FETCH_FLUTTER_SEARCH')
 FLUTTER_HOME_URL = os.getenv('FLUTTER_HOME_URL')
-HOME_PATH = os.path.join(os.path.dirname(__file__),'data/flutter-search.html')
-FILE_PATH = os.path.join(os.path.dirname(__file__),f'data/flutter-{keyword.lower()}.html')
-PROXY = {
-    'http': f'{randomProxyPicker()}'
-}
+# HOME_PATH = os.path.join(os.path.dirname(__file__),'data/flutter-search.html')
+# FILE_PATH = os.path.join(os.path.dirname(__file__),f'data/flutter-{keyword.lower()}.html')
+# PROXY = {
+#     'http': f'{randomProxyPicker()}'
+# }
 
 model_name = 'gpt2'
 model = GPT2LMHeadModel.from_pretrained(model_name)
@@ -28,13 +28,13 @@ options.add_argument('--headless')
 
 driver = webdriver.Chrome(options=options)
 
-def flutterDocsSearchPageFetcher():
+def flutterDocsSearchPageFetcher(query):
     try:
         webdriver.DesiredCapabilities.CHROME['proxy'] = {
             'httpProxy': f'{randomProxyPicker()}'
         }
 
-        driver.get(FETCH_FLUTTER_SEARCH+keyword)
+        driver.get(FETCH_FLUTTER_SEARCH+query)
 
         data = driver.page_source
 
@@ -43,8 +43,6 @@ def flutterDocsSearchPageFetcher():
 
     except:
         print('ERROR')
-
-flutterDocsSearchPageFetcher()
 
 def fetchRelevantUrl():
     with open(HOME_PATH) as f:
@@ -59,7 +57,7 @@ def fetchRelevantUrl():
         return ("ERROR")
 
     
-def fetchRelevantPage():
+def fetchRelevantPage(PROXY):
     url = fetchRelevantUrl()
     if(url != 'ERROR'):
         data = requests.get(url, proxies= PROXY )
@@ -67,9 +65,8 @@ def fetchRelevantPage():
         with open(FILE_PATH,'w') as f:
             f.write(data.text)
     else:
-        print('ERROR: Keyword not found')
-
-fetchRelevantPage()
+        # print('ERROR: Keyword not found')
+        return None
 
 def createParagraphsList():
     paragraphs = []
@@ -102,13 +99,10 @@ def generate_article(sentences):
     article = tokenizer.decode(outputs[0], skip_special_tokens=True)
     return article
 
-if(os.path.exists(FILE_PATH)):
+def search(query, proxy):
+    flutterDocsSearchPageFetcher(query)
+    if fetchRelevantPage(proxy) == None:
+        return None
     paragraphs = createParagraphsList()
     article = generate_article(paragraphs).replace('. ','.\n').replace('<','\n<').replace('>','>\n').replace(': ',':\n')
-    with open(os.path.join(os.path.dirname(__file__),f'data/{keyword.lower()}.txt'),'w') as f:
-        f.write(article)
-
-
-
-
-
+    return article

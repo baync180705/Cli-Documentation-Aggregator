@@ -107,7 +107,11 @@ def search(query, PROXY):
                 item.to_csv(csv_file, sep='\t') 
          else:
             article += item + '\n'
-    return article
+
+    if len(article.strip()) == 0:
+        return None
+    else:
+        return article
 
 
 

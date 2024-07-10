@@ -2,29 +2,28 @@ from transformers import GPT2LMHeadModel, GPT2Tokenizer
 from bs4 import BeautifulSoup
 import os
 import requests
-import proxy_ip
+# import proxy_ip
 
 FETCH_REACT_DOC = os.getenv('FETCH_REACT_DOC')
 FETCH_REACT_HOME = os.getenv('FETCH_REACT_HOME')
 HOME_PATH = os.path.join(os.path.dirname(__file__),'data/react-home.html')
 
-PROXY = {
-    'http': f'{proxy_ip.randomProxyPicker()}'
-}
+# PROXY = {
+#     'http': f'{proxy_ip.randomProxyPicker()}'
+# }
 
 model_name = 'gpt2'
 model = GPT2LMHeadModel.from_pretrained(model_name)
 tokenizer = GPT2Tokenizer.from_pretrained(model_name)
 
-index = 1
-keyword = 'hooks'
+paragraphs = []
 
-def reactDocsHomePageFetcher():
+def reactDocsHomePageFetcher(PROXY):
     data = requests.get(FETCH_REACT_DOC, proxies=PROXY)
     with open(HOME_PATH,'w') as file:
         file.write(data.text)
 
-def soupeObjectCreator():
+def soupeObjectCreator(PROXY):
     if(os.path.exists(HOME_PATH)):
         with open(HOME_PATH) as f:
             react_doc = f.read()
@@ -32,11 +31,11 @@ def soupeObjectCreator():
 
         return soupe
     else:
-        reactDocsHomePageFetcher()
-        soupeObjectCreator()
+        reactDocsHomePageFetcher(PROXY)
+        soupeObjectCreator(PROXY)
 
-def fetchUrlFromKeyword(keyword):
-    soupe = soupeObjectCreator()
+def fetchUrlFromKeyword(keyword, PROXY):
+    soupe = soupeObjectCreator(PROXY)
     anchors = soupe.find_all('a')
     relevantUrls = []
     for anchor in anchors:
@@ -53,14 +52,9 @@ def fetchUrlFromKeyword(keyword):
     else:
         return relevantUrls
 
-fetchedUrls = fetchUrlFromKeyword(keyword.lower())
+def inPageRouteScrapper(url, proxy):
 
- 
-paragraphs = []
-
-def inPageRouteScrapper(url):
-
-    soupe = soupeObjectCreator()
+    soupe = soupeObjectCreator(proxy)
     anchor = soupe.find('a', href = url)
     parent = anchor.parent
 
@@ -103,18 +97,19 @@ def generate_article(sentences):
     return article
 
 
+def search(query, proxy):
+    index = 1
+    fetchedUrls = fetchUrlFromKeyword(query.lower(), proxy)
+    if(fetchedUrls != 'ERROR'):
+        for url in fetchedUrls:
+            if(url[0] == '#'):
+                inPageRouteScrapper(url, proxy)
 
-if(fetchedUrls != 'ERROR'):
-    for url in fetchedUrls:
-        if(url[0] == '#'):
-            inPageRouteScrapper(url)
+            if(url[0]=='/'):
+                externalRouteScrapper(FETCH_REACT_HOME+url,index, query)
+                index += 1
+        article = generate_article(paragraphs).replace('. ','.\n').replace('<','\n<').replace('>','>\n')
+        return article
 
-        if(url[0]=='/'):
-            externalRouteScrapper(FETCH_REACT_HOME+url,index, keyword)
-            index += 1
-    article = generate_article(paragraphs).replace('. ','.\n').replace('<','\n<').replace('>','>\n')
-
-    with open(os.path.join(os.path.dirname(__file__),f'data/{keyword}.txt'),'w') as f:
-        f.write(article)
-else:
-    print(f'ERROR: keyword: {keyword} not found. Please try with a different keyword.')
+    else:
+        return None
