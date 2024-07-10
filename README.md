@@ -25,17 +25,18 @@
     <img src="./assets/WhatsApp Image 2024-07-10 at 10.26.58 PM.jpeg">
 
 <p>Once the script starts running, user can type search <scrapper> <term_to_search> , for examples:</p>
-    ![WhatsApp Image 2024-07-10 at 10 27 29 PM](./assets/WhatsApp Image 2024-07-10 at 10.27.29 PM.jpeg)
-    ![WhatsApp Image 2024-07-10 at 11 01 40 PM](./assets/WhatsApp Image 2024-07-10 at 11.01.40 PM.jpeg)
+   <img src="./assets/WhatsApp Image 2024-07-10 at 10.27.29 PM.jpeg"> 
+   <img src="./assets/WhatsApp Image 2024-07-10 at 11.01.40 PM.jpeg"> 
+
     
 <p>User can use : doc show <scrapper> to show previous saved results and select the file based on index</p>
-    ![WhatsApp Image 2024-07-10 at 10 29 58 PM](./assets/WhatsApp Image 2024-07-10 at 11.01.40 PM.jpeg)
+    <img src="./assets/WhatsApp Image 2024-07-10 at 11.01.40 PM.jpeg">
 
 <p>User can use : doc remove <scrapper> to show previous saved results and select the file based on index to delete it</p>
-    ![WhatsApp Image 2024-07-10 at 10 30 31 PM](./assets/WhatsApp Image 2024-07-10 at 10.30.31 PM.jpeg)
+   <img src="./assets/WhatsApp Image 2024-07-10 at 10.30.31 PM.jpeg">
 
 <p>User can list down the content of webman directory to show the previous saved outputs</p>
-    ![WhatsApp Image 2024-07-10 at 10 28 46 PM](./assets/WhatsApp Image 2024-07-10 at 10.28.46 PM.jpeg)
+   <img src ="./assets/WhatsApp Image 2024-07-10 at 10.28.46 PM.jpeg"> 
 
 <br>
 <h2>Future Recommendations </h2>
