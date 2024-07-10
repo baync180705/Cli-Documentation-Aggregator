@@ -7,7 +7,8 @@ import scrappers.expressjs_scrapper as express
 import scrappers.gfg_scrapper as gfg
 import scrappers.react_scraper as react
 import scrappers.flutter_scraper as flutter
-from ai_fallback import ai_generate as ai
+import scrappers.django_scrapper as django
+from ai_fallback.ai_fallback import generate as ai
 from proxy_ip.proxy_ip import randomProxyPicker
 
 load_dotenv()
@@ -74,12 +75,14 @@ def search(args):
             article = express.search(query, generate_proxy())
         case 'python':
             article = python.search(query, generate_proxy())
+        case 'django':
+            article = django.search(query, generate_proxy())
         case 'ai':
-            article = ai.generate(query)
+            article = ai(query)
 
     if article == None and args.scraper[0] != 'ai': # to prevent recursion
         print('query not found, generating ai article')
-        article = f'ai {query}'
+        article = f'{ai(query)}'
 
     print(article)
     
