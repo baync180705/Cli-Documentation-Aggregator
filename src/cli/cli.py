@@ -103,7 +103,7 @@ def doc(args):
 def cli(ar):
     exit = False
     while not exit:
-        print('>>> ', end='\n')
+        print('\n>>> ', end='')
         command = input()
         match command.strip():
             case 'exit':
