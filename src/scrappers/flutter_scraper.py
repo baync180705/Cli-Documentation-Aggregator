@@ -3,7 +3,7 @@ import requests
 from transformers import GPT2LMHeadModel, GPT2Tokenizer
 from bs4 import BeautifulSoup
 # from dotenv import load_dotenv
-from proxy_ip import randomProxyPicker
+from scrappers.proxy_ip import randomProxyPicker
 from selenium import webdriver
 
 
@@ -13,8 +13,8 @@ keyword = 'sgvusb'
 
 FETCH_FLUTTER_SEARCH = os.getenv('FETCH_FLUTTER_SEARCH')
 FLUTTER_HOME_URL = os.getenv('FLUTTER_HOME_URL')
-# HOME_PATH = os.path.join(os.path.dirname(__file__),'data/flutter-search.html')
-# FILE_PATH = os.path.join(os.path.dirname(__file__),f'data/flutter-{keyword.lower()}.html')
+HOME_PATH = os.path.join(os.path.dirname(__file__),'data/flutter-search.html')
+FILE_PATH = os.path.join(os.path.dirname(__file__),f'data/flutter-{keyword.lower()}.html')
 # PROXY = {
 #     'http': f'{randomProxyPicker()}'
 # }
