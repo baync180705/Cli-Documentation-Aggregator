@@ -94,6 +94,7 @@ elif library:
                     data.append(h2.get_text())
                     for sib in h2.next_siblings():
                         if sib.name == "div" and sib.child.name == "table":
+                            data.append(f"///RESPECTIVE TABLE HAS BEEN SAVED AS {user_input.split(" ")[0]}.csv FILE")
                             body = sib.find_all("tr")
                             head = body[0] 
                             body_rows = body[1:]
@@ -122,6 +123,7 @@ elif library:
                 if user_input.lower().split(" ")[0] in child["href"].split("-"):
                     title = h3.get_text()
                     for sib in h3.next_siblings():
+                        data.append(f"///RESPECTIVE TABLE HAS BEEN SAVED AS {user_input.split(" ")[0]}.csv FILE")
                         if sib.name == "div" and sib.child.name == "table":
                             body = sib.find_all("tr")
                             head = body[0] 
@@ -180,10 +182,10 @@ for item in data:
 
 updated_data.insert(0,title)
 
-with open(os.path.join(os.path.dirname(__file__),'data/search.html', "w")) as file:
+with open(os.path.join(os.path.dirname(__file__),f'data/{user_input.split(' ')[0]}.html', "w")) as file:
    for item in data:
         if isinstance(item, pd.DataFrame):
-            with open(os.path.join(os.path.dirname(__file__),'data/search.html'), "w") as csv_file:
+            with open(os.path.join(os.path.dirname(__file__),f'data/{user_input.split(' ')[0]}.csv'), "w") as csv_file:
                 item.to_csv(csv_file, sep='\t') 
         else:
             file.write(item + "\n\n") 
