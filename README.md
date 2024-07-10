@@ -22,7 +22,7 @@
 <h2>Working</h2>
 
  <p>After setting up the files, open the terminal and run main.py cli to run interactive cli and see the help page</p>
-    ![WhatsApp Image 2024-07-10 at 10 26 58 PM](./assets/WhatsApp Image 2024-07-10 at 10.26.58 PM.jpeg)
+    <img src="./assets/WhatsApp Image 2024-07-10 at 10.26.58 PM.jpeg">
 
 <p>Once the script starts running, user can type search <scrapper> <term_to_search> , for examples:</p>
     ![WhatsApp Image 2024-07-10 at 10 27 29 PM](./assets/WhatsApp Image 2024-07-10 at 10.27.29 PM.jpeg)
