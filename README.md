@@ -22,21 +22,20 @@
 <h2>Working</h2>
 
  <p>After setting up the files, open the terminal and run main.py cli to run interactive cli and see the help page</p>
-    ![WhatsApp Image 2024-07-10 at 10 26 58 PM](https://github.com/baync180705/Cli-Documentation-Aggregator/assets/146727112/d3a597de-86a5-4324-bc1a-58394ae11af5)
+    ![WhatsApp Image 2024-07-10 at 10 26 58 PM](./assets/WhatsApp Image 2024-07-10 at 10.26.58 PM.jpeg)
 
-    <p>Once the script starts running, user can type search <scrapper> <term to search> , for examples:</p>
-    ![WhatsApp Image 2024-07-10 at 10 27 29 PM](https://github.com/baync180705/Cli-Documentation-Aggregator/assets/146727112/49bdfce1-6c59-42cf-a17e-0e68f83e6cbd)
-    ![WhatsApp Image 2024-07-10 at 11 01 40 PM](https://github.com/baync180705/Cli-Documentation-Aggregator/assets/146727112/d5c04a35-9daf-4844-86a7-64158d924657)
+<p>Once the script starts running, user can type search <scrapper> <term_to_search> , for examples:</p>
+    ![WhatsApp Image 2024-07-10 at 10 27 29 PM](./assets/WhatsApp Image 2024-07-10 at 10.27.29 PM.jpeg)
+    ![WhatsApp Image 2024-07-10 at 11 01 40 PM](./assets/WhatsApp Image 2024-07-10 at 11.01.40 PM.jpeg)
     
-    <p>User can use : doc show <scrapper> to show previous saved results and select the file based on index</p>
-    ![WhatsApp Image 2024-07-10 at 10 29 58 PM](https://github.com/baync180705/Cli-Documentation-Aggregator/assets/146727112/de589050-c161-45b1-980d-da853fcd2122)
+<p>User can use : doc show <scrapper> to show previous saved results and select the file based on index</p>
+    ![WhatsApp Image 2024-07-10 at 10 29 58 PM](./assets/WhatsApp Image 2024-07-10 at 11.01.40 PM.jpeg)
 
-    <p>User can use : doc remove <scrapper> to show previous saved results and select the file based on index to delete it</p>
-    ![WhatsApp Image 2024-07-10 at 10 29 58 PM](https://github.com/baync180705/Cli-Documentation-Aggregator/assets/146727112/b40e2937-37e9-4771-90a5-3e5fb286ef0d)
-    ![WhatsApp Image 2024-07-10 at 10 30 31 PM](https://github.com/baync180705/Cli-Documentation-Aggregator/assets/146727112/f2435c71-686b-4a54-b621-64996447f532)
+<p>User can use : doc remove <scrapper> to show previous saved results and select the file based on index to delete it</p>
+    ![WhatsApp Image 2024-07-10 at 10 30 31 PM](./assets/WhatsApp Image 2024-07-10 at 10.30.31 PM.jpeg)
 
-    <p>User can list down the content of webman directory to show the previous saved outputs</p>
-    ![WhatsApp Image 2024-07-10 at 10 28 46 PM](https://github.com/baync180705/Cli-Documentation-Aggregator/assets/146727112/cf6abfc1-4450-4208-bcd8-fd62420660c1)
+<p>User can list down the content of webman directory to show the previous saved outputs</p>
+    ![WhatsApp Image 2024-07-10 at 10 28 46 PM](./assets/WhatsApp Image 2024-07-10 at 10.28.46 PM.jpeg)
 
 <br>
 <h2>Future Recommendations </h2>
