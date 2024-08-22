@@ -1,0 +1,7 @@
+version: '3.8'
+
+services:
+  cli:
+    build: ./docker
+    image: cli_docs_aggregator
+    container_name: nostalgic_carson
